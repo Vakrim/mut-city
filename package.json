@@ -1,0 +1,16 @@
+{
+  "name": "type-script-bootstrap",
+  "version": "1.0.0",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "webpack-dev-server --content-base ./public"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "ts-loader": "^3.2.0",
+    "typescript": "^2.6.2",
+    "webpack": "^1.12.9",
+    "webpack-dev-server": "^1.14.0"
+  },
+  "dependencies": {}
+}
