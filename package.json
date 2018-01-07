@@ -12,5 +12,10 @@
     "webpack": "^1.12.9",
     "webpack-dev-server": "^1.14.0"
   },
-  "dependencies": {}
+  "dependencies": {
+    "@types/lodash": "^4.14.92",
+    "@types/pixi.js": "^4.6.3",
+    "lodash": "^4.17.4",
+    "pixi.js": "^4.6.2"
+  }
 }

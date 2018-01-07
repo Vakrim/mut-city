@@ -4,7 +4,7 @@ export default class Factory {
   position: Vec2
   age: number
 
-  demolitionCost() {
+  pathCost() {
     return 5;
   }
 }

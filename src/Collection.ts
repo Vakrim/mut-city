@@ -19,6 +19,10 @@ export default class Collection<T> {
     return item;
   }
 
+  delete(item: T) {
+    return this.set.delete(item);
+  }
+
   [Symbol.iterator]() {
     return this.set.values();
   }
