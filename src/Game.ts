@@ -1,9 +1,12 @@
-import Factory from "./Factory";
-import Road from "./Road";
+import Factory, { FactoryParams } from "./Factory";
+import Road, { RoadParams } from "./Road";
 import { Vec2 } from "./Math";
 import Collection from "./Collection";
 import FindNearest from "./FindNearest";
 import * as PIXI from 'pixi.js';
+import Resource, { ResourceType } from "./Resource";
+import { toPairs, minBy, every } from "lodash";
+import { ResourcePath } from "./Path";
 
 export interface HasPosition {
   position: Vec2
@@ -14,14 +17,18 @@ export default class Game {
   roads: Collection<Road>
   boardSize = 50;
   board: Array<Array<HasPosition>>
+  resourcePaths: ResourcePath[] = [];
   graphics: PIXI.Graphics
 
   init() {
     this.factories = new Collection();
     this.roads = new Collection();
 
-    const mainFactory = this.createFactory(factory => {
-      factory.position = new Vec2(25, 25);
+
+    const mainFactory = this.createFactory({
+      position: new Vec2(25, 25),
+      requires: [new Resource(2, "Log")],
+      provides: new Resource(1, "Point")
     });
 
     this.createEmptyBoard();
@@ -36,24 +43,52 @@ export default class Game {
   }
 
   update() {
-    this.updateBoard()
-    const solution = new FindNearest(this.board, <Factory>this.findAt(new Vec2(25, 25))).solve();
+    const factoryWithBalance = this.findFactoryWithoutRequiresMeet();
+    if(factoryWithBalance) {
 
-    if(solution) {
-      for(let node of solution.route) {
-        if(node instanceof Factory) {
-          this.destroyFactory(node);
-          this.createRoad(road => {
-            road.position = node.position;
-          })
+      this.updateBoard()
+      const solution = new FindNearest(this.board, factoryWithBalance.factory).solve();
+
+      if(solution) {
+        for(let node of solution.route) {
+          if(node instanceof Factory) {
+            this.destroyFactory(node);
+            this.createRoad({position: node.position});
+          }
         }
+        // this.resourcePaths.push({
+
+        // })
+        this.createFactory({ position: solution.end.position, requires: [], provides: new Resource(1, factoryWithBalance.resourceName) });
       }
-      this.createFactory(factory => {
-        factory.position = solution.end.position;
-      });
     }
 
     this.render();
+  }
+
+  findFactoryWithoutRequiresMeet() {
+    for(let factory of this.factories) {
+      const balance: {[resourceName: string]: number} = {};
+      factory.requires.forEach(resource => {
+        balance[resource.type] = balance[resource.type] || 0;
+        balance[resource.type] -= resource.amount;
+      })
+      this.resourcePaths.filter(path => path.end === factory).forEach(resourcePath => {
+        const resource = resourcePath.resource;
+        balance[resource.type] += resource.amount;
+      });
+
+      for(let resourceName in balance) {
+        if(balance[resourceName] < 0) {
+          return {
+            factory,
+            resourceName: <ResourceType>resourceName,
+            amount: -balance[resourceName]
+          }
+        }
+      }
+    }
+    return null;
   }
 
   render() {
@@ -75,15 +110,13 @@ export default class Game {
     return this.factories.find(predicate) || this.roads.find(predicate);
   }
 
-  createFactory(tap: (f: Factory) => void = () => {}): Factory {
-    const factory = new Factory();
-    tap(factory)
+  createFactory(params: FactoryParams): Factory {
+    const factory = new Factory(params);
     return this.factories.add(factory);
   }
 
-  createRoad(tap: (f: Road) => void = () => {}): Road {
-    const road = new Road();
-    tap(road)
+  createRoad(params: RoadParams): Road {
+    const road = new Road(params);
     return this.roads.add(road);
   }
 

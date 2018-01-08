@@ -1,6 +1,7 @@
 import { Vec2 } from "./Math";
 import { HasPosition } from './Game';
 import { minBy, pull } from 'lodash';
+import Path from "./Path";
 
 type Grid = Array<Array<HasPosition>>;
 type EmptyCell= HasPosition & {isEmpty: boolean}
@@ -38,7 +39,7 @@ export default class FindNearest {
       path.push(lastNode);
       lastNode = <HasPosition>this.cameFrom.get(lastNode);
     }
-    return new FindNearestSolution(path.reverse());
+    return new Path(path.reverse());
   }
 
   private calculateEndNode() {
@@ -70,20 +71,5 @@ export default class FindNearest {
         this.openSet.push(neighbour)
       }
     })
-  }
-}
-
-class FindNearestSolution {
-  path: HasPosition[];
-  start: HasPosition;
-  end: HasPosition;
-  route: HasPosition[];
-
-  constructor(path: HasPosition[]) {
-    this.path = path;
-    const route = [...path];
-    this.start = <HasPosition>route.shift();
-    this.end = <HasPosition>route.pop();
-    this.route = route;
   }
 }

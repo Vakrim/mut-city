@@ -23,6 +23,22 @@ export default class Collection<T> {
     return this.set.delete(item);
   }
 
+  reduce<N>(fn: (currentValue: N, item: T) => N, startValue: N) {
+    let value = startValue;
+    for (let element of this.set) {
+      value = fn(value, element);
+    }
+    return value;
+  }
+
+  transform<N>(fn: (currentValue: N, item: T) => void, startValue: N) {
+    let value = startValue;
+    for (let element of this.set) {
+      fn(value, element);
+    }
+    return value;
+  }
+
   [Symbol.iterator]() {
     return this.set.values();
   }

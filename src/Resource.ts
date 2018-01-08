@@ -5,10 +5,15 @@ function strEnum<T extends string>(o: Array<T>): { [K in T]: K } {
   }, Object.create(null));
 }
 
-const ResourceTypes = strEnum(["Wood", "Log"]);
-type ResourceType = keyof typeof ResourceTypes;
+const ResourceTypes = strEnum(["Wood", "Log", "Point"]);
+export type ResourceType = keyof typeof ResourceTypes;
 
 export default class Resource {
-  type: ResourceType;
   amount: number;
+  type: ResourceType;
+
+  constructor(amount: number, type: ResourceType) {
+    this.amount = amount;
+    this.type = type;
+  }
 }
