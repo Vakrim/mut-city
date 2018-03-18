@@ -1,5 +1,5 @@
-import Game from "./Game";
+import Game from './Game';
 
 const game = new Game();
 
-game.init();
+game.run();

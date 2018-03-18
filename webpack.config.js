@@ -1,16 +1,24 @@
-var path = require("path");
+const path = require('path');
 
 module.exports = {
-  entry: "./src/index.ts",
-  output: {
-    filename: "bundle.js"
+  devtool: 'inline-source-map',
+  entry: './src/index.ts',
+  module: {
+    rules: [
+      {
+        test: /\.tsx?$/,
+        loader: 'ts-loader',
+      },
+    ],
   },
   resolve: {
-    extensions: ["", ".webpack.js", ".web.js", ".ts", ".tsx", ".js"]
+    extensions: ['.ts', '.tsx', '.js'],
   },
-  module: {
-    loaders: [
-      { test: /\.tsx?$/, loader: "ts-loader" }
-    ]
+  devServer: {
+    contentBase: path.join(__dirname, "public")
+  },
+  output: {
+    filename: "bundle.js",
+    publicPath: "/",
   }
-}
+};
