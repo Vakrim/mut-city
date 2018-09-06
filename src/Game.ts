@@ -1,6 +1,5 @@
 import { Vec2 } from './Math';
 import Collection from './Collection';
-import Resource, { ResourceType } from './Resource';
 import { toPairs, minBy, every } from 'lodash';
 import * as rough from 'roughjs';
 import { Drone } from './Drone';

@@ -1,4 +1,4 @@
-import { Graph, astar } from './AStar';
+import { Graph, findPath } from './AStar';
 
 // prettier-ignore
 const map = [
@@ -23,7 +23,7 @@ describe('A*', () => {
     const start = graph.grid[0][0];
     const end = graph.grid[3][3];
 
-    expect(astar.search(graph, start, end).map(n => [n.x, n.y])).toEqual([
+    expect(findPath(graph, start, end).map(n => [n.x, n.y])).toEqual([
       [0, 1],
       [0, 2],
       [0, 3],
@@ -39,7 +39,7 @@ describe('A*', () => {
     const start = graph.grid[0][0];
     const end = graph.grid[3][3];
 
-    expect(astar.search(graph, start, end).map(n => [n.x, n.y])).toEqual([
+    expect(findPath(graph, start, end).map(n => [n.x, n.y])).toEqual([
       [0, 1],
       [0, 2],
       [1, 3],
@@ -54,7 +54,7 @@ describe('A*', () => {
     const start = graph.grid[0][0];
     const end = graph.grid[3][3];
 
-    expect(astar.search(graph, start, end).map(n => [n.x, n.y])).toEqual([
+    expect(findPath(graph, start, end).map(n => [n.x, n.y])).toEqual([
       [0, 1],
       [0, 2],
       [0, 3],
@@ -63,7 +63,7 @@ describe('A*', () => {
       [3, 3],
     ]);
 
-    expect(astar.search(graph, end, start).map(n => [n.x, n.y])).toEqual([
+    expect(findPath(graph, end, start).map(n => [n.x, n.y])).toEqual([
       [2, 3],
       [1, 3],
       [0, 3],
@@ -86,7 +86,7 @@ describe('A*', () => {
     const start = graph.grid[0][0];
     const end = graph.grid[2][0];
 
-    expect(astar.search(graph, start, end).map(n => [n.x, n.y])).toEqual([
+    expect(findPath(graph, start, end).map(n => [n.x, n.y])).toEqual([
       [0, 1],
       [0, 2],
       [1, 2],
@@ -97,7 +97,7 @@ describe('A*', () => {
 
     graph.grid[1][1].weight = 1;
 
-    expect(astar.search(graph, start, end).map(n => [n.x, n.y])).toEqual([
+    expect(findPath(graph, start, end).map(n => [n.x, n.y])).toEqual([
       [0, 1],
       [1, 1],
       [2, 1],
