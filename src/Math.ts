@@ -7,31 +7,33 @@ export class Vec2 {
     this.y = y;
   }
 
-  moveTowards(target: Vec2, distance: number): boolean {
-    const dx = target.x - this.x;
-    const dy = target.y - this.y;
-    const distanceToTarget = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
-
-    if (distance > distanceToTarget) {
-      this.x = target.x;
-      this.y = target.y;
-      return true;
-    } else {
-      this.x += dx * distance / distanceToTarget;
-      this.y += dy * distance / distanceToTarget;
-      return false;
-    }
-  }
-
   isEqual(other: Vec2): boolean {
-    return this.x == other.x && this.y == other.y;
+    return this.x === other.x && this.y === other.y;
   }
 
   static random(): Vec2 {
-    return new Vec2(Math.random() * 500, Math.random() * 500);
+    return new Vec2(
+      Math.floor(Math.random() * 50),
+      Math.floor(Math.random() * 50)
+    );
   }
 
   static copyOf(origin: Vec2): Vec2 {
     return new Vec2(origin.x, origin.y);
   }
+}
+
+export function ones(height: number, width: number) {
+  const ret: (number[])[] = [];
+  for (let y = 0; y < height; y++) {
+    ret[y] = [];
+    for (let x = 0; x < width; x++) {
+      ret[y][x] = 1;
+    }
+  }
+  return ret;
+}
+
+export function randomFromArray<T>(arr: T[]): T {
+  return arr[Math.floor(Math.random() * arr.length)];
 }

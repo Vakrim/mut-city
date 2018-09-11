@@ -14,6 +14,16 @@ export default class Collection<T> {
     return null;
   }
 
+  filter(predicate: (item: T) => Boolean): T[] {
+    const ret = []
+    for (let element of this.set) {
+      if (predicate(element)) {
+        ret.push(element);
+      }
+    }
+    return ret;
+  }
+
   add(item: T) {
     this.set.add(item);
     return item;

@@ -172,25 +172,25 @@ export class Graph {
     this.init();
   }
 
-  init = () => {
+  init() {
     this.dirtyNodes = [];
     for (let i = 0; i < this.nodes.length; i++) {
       cleanNode(this.nodes[i]);
     }
-  };
+  }
 
-  cleanDirty = () => {
+  cleanDirty() {
     for (let i = 0; i < this.dirtyNodes.length; i++) {
       cleanNode(this.dirtyNodes[i]);
     }
     this.dirtyNodes = [];
-  };
+  }
 
-  markDirty = (node: GridNode) => {
+  markDirty(node: GridNode) {
     this.dirtyNodes.push(node);
-  };
+  }
 
-  neighbors = (node: GridNode) => {
+  neighbors(node: GridNode) {
     const ret = [];
     const x = node.x;
     const y = node.y;
@@ -239,9 +239,9 @@ export class Graph {
     }
 
     return ret;
-  };
+  }
 
-  toString = () => {
+  toString() {
     const graphString = [];
     const nodes = this.grid;
     for (let x = 0; x < nodes.length; x++) {
@@ -253,10 +253,10 @@ export class Graph {
       graphString.push(rowDebug.join(' '));
     }
     return graphString.join('\n');
-  };
+  }
 }
 
-class GridNode {
+export class GridNode {
   x: number;
   y: number;
   weight: number;
@@ -273,21 +273,21 @@ class GridNode {
     this.weight = weight;
   }
 
-  toString = () => {
+  toString() {
     return '[' + this.x + ' ' + this.y + ']';
-  };
+  }
 
-  getCost = (fromNeighbor: GridNode) => {
+  getCost(fromNeighbor: GridNode) {
     // Take diagonal weight into consideration.
     if (fromNeighbor && fromNeighbor.x != this.x && fromNeighbor.y != this.y) {
       return this.weight * 1.41421;
     }
     return this.weight;
-  };
+  }
 
-  isWall = () => {
+  isWall() {
     return this.weight === 0;
-  };
+  }
 }
 
 class BinaryHeap<T> {
@@ -299,15 +299,15 @@ class BinaryHeap<T> {
     this.scoreFunction = scoreFunction;
   }
 
-  push = (element: T) => {
+  push(element: T) {
     // Add the new element to the end of the array.
     this.content.push(element);
 
     // Allow it to sink down.
     this.sinkDown(this.content.length - 1);
-  };
+  }
 
-  pop = () => {
+  pop() {
     // Store the first element so we can return it later.
     const result = this.content[0];
     // Get the element at the end of the array.
@@ -319,9 +319,9 @@ class BinaryHeap<T> {
       this.bubbleUp(0);
     }
     return result;
-  };
+  }
 
-  remove = (node: T) => {
+  remove(node: T) {
     const i = this.content.indexOf(node);
 
     // When it is found, the process seen in 'pop' is repeated
@@ -337,17 +337,17 @@ class BinaryHeap<T> {
         this.bubbleUp(i);
       }
     }
-  };
+  }
 
-  size = () => {
+  size() {
     return this.content.length;
-  };
+  }
 
-  rescoreElement = (node: T) => {
+  rescoreElement(node: T) {
     this.sinkDown(this.content.indexOf(node));
-  };
+  }
 
-  sinkDown = (n: number) => {
+  sinkDown(n: number) {
     // Fetch the element that has to be sunk.
     const element = this.content[n];
 
@@ -367,9 +367,9 @@ class BinaryHeap<T> {
         break;
       }
     }
-  };
+  }
 
-  bubbleUp = (n: number) => {
+  bubbleUp(n: number) {
     // Look up the target element and its score.
     const length = this.content.length;
     const element = this.content[n];
@@ -413,5 +413,5 @@ class BinaryHeap<T> {
         break;
       }
     }
-  };
+  }
 }

@@ -1,86 +1,113 @@
-import { Vec2 } from './Math';
+import { Vec2, ones } from './Math';
 import Collection from './Collection';
-import { toPairs, minBy, every } from 'lodash';
 import * as rough from 'roughjs';
+import { Graph, GridNode } from './AStar';
 import { Drone } from './Drone';
+import { TomatoFactory, TomatoSlicingFactory, Factory } from './Factory';
 
 export interface HasPosition {
   position: Vec2;
 }
 
+interface GameObject {
+  update(game: Game): void;
+  position: Vec2;
+}
+
 export default class Game {
-  drones: Collection<Drone>;
-  resources: Collection<Resource>;
+  objects: Collection<GameObject>;
+  graph: Graph = new Graph(ones(50, 50));
+  step: number = 0;
+
   graphics: any;
   canvas: HTMLCanvasElement;
 
   constructor() {
-    this.drones = new Collection();
-    this.resources = new Collection();
+    this.objects = new Collection();
 
-    const canvas = document.getElementById('canvas');
-    if (!canvas) {
-      throw new Error('No canvas element found!');
-    }
-    this.canvas = <HTMLCanvasElement>canvas;
+    this.canvas = document.getElementById('canvas') as HTMLCanvasElement;
     this.graphics = rough.canvas(this.canvas);
 
     this.seed();
+
+    this.canvas.addEventListener('click', event => {
+      const rect = this.canvas.getBoundingClientRect();
+      const x = event.clientX - rect.left;
+      const y = event.clientY - rect.top;
+
+      const inspected = this.objects.find(object => {
+        return object.position.x * 10 <= x && x <= object.position.x * 10 + 10 &&
+        object.position.y * 10 <= y && y <= object.position.y * 10 + 10
+      });
+
+      console.dir(inspected);
+    })
   }
 
   seed() {
-    for (let i = 0; i < 50; i++) {
-      this.drones.add(new Drone());
+    for (let i = 0; i < 10; i++) {
+      this.objects.add(new Drone());
     }
-    for (let i = 0; i < 50; i++) {
-      this.resources.add(new Resource({ type: ResourceType.Stick }));
+    for (let i = 0; i < 10; i++) {
+      this.objects.add(new TomatoFactory(new Vec2(2 * i + 2, 2)));
     }
+    for (let i = 0; i < 10; i++) {
+      this.objects.add(new TomatoSlicingFactory(new Vec2(2 * i + 2, 40)));
+    }
+  }
+
+  factories(): Factory[] {
+    return this.objects.filter(
+      object => object instanceof Factory
+    ) as Factory[];
   }
 
   run() {
     setInterval(() => {
       this.update();
-    }, 300);
+    }, 100);
     setInterval(() => {
       this.render();
     }, 100);
   }
 
   update() {
-    for (let drone of this.drones) {
-      drone.update(this);
+    this.step++;
+    for (let object of this.objects) {
+      object.update(this);
     }
   }
 
   render() {
     const context = this.canvas.getContext('2d');
-    if (!context) {
-      throw new Error('No context!');
-    }
 
     context.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
-    const fillRed = { fill: 'red' };
     const fillGreen = { fill: 'green' };
+    const fillRed = { fill: 'red' };
+    const lightStroke = { stroke: 'rgba(0, 0, 0, 0.1)'}
 
-    for (let drone of this.drones) {
+    for (let object of this.objects) {
       this.graphics.rectangle(
-        drone.position.x - 5,
-        drone.position.y - 5,
-        10,
-        10,
-        fillRed
+        object.position.x * 10 + 1,
+        object.position.y * 10 + 1,
+        8,
+        8,
+        object instanceof Drone ? fillGreen : fillRed
       );
-    }
 
-    for (let Resource of this.resources) {
-      this.graphics.rectangle(
-        Resource.position.x - 5,
-        Resource.position.y - 5,
-        10,
-        10,
-        fillGreen
-      );
+      if (object instanceof Drone && (object.behavior as any).path) {
+        const path = (object.behavior as any).path as GridNode[];
+        for (let i = 1; i < path.length; i++) {
+          this.graphics.line(
+            path[i - 1].x * 10 + 5,
+            path[i - 1].y * 10 + 5,
+            path[i].x * 10 + 5,
+            path[i].y * 10 + 5,
+            lightStroke
+          );
+        }
+      }
     }
   }
 }
