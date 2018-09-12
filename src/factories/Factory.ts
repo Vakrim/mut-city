@@ -1,6 +1,6 @@
-import { Vec2 } from './Math';
-import { Storage, ProductType, Tomato } from './Storage';
-import Game from './Game';
+import { Vec2 } from '../Math';
+import { Storage, ProductType, Tomato } from '../Storage';
+import Game from '../Game';
 
 export abstract class Factory {
   position: Vec2;
@@ -31,18 +31,4 @@ export abstract class Factory {
   }
 
   update(game: Game) {}
-}
-
-export class TomatoFactory extends Factory {
-  update(game: Game) {
-    if(this.outbox.get(ProductType.Tomato) < 100) {
-      this.outbox.add(1, Tomato);
-    }
-  }
-}
-
-export class TomatoSlicingFactory extends Factory {
-  init() {
-    this.demand.add(100, Tomato);
-  }
 }

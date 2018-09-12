@@ -1,9 +1,12 @@
 import { Vec2, ones } from './Math';
 import Collection from './Collection';
 import * as rough from 'roughjs';
-import { Graph, GridNode } from './AStar';
 import { Drone } from './Drone';
-import { TomatoFactory, TomatoSlicingFactory, Factory } from './Factory';
+import { Factory } from './factories/Factory';
+import { TomatoFactory } from './factories/TomatoFactory';
+import { TomatoSlicingFactory } from './factories/TomatoSlicingFactory';
+import { GridNode } from './grid/GridNode';
+import { Graph } from './grid/Graph';
 
 export interface HasPosition {
   position: Vec2;

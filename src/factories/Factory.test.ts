@@ -1,5 +1,5 @@
-import { Vec2 } from './Math';
-import { TomatoFactory } from './Factory';
+import { Vec2 } from '../Math';
+import { TomatoFactory } from './TomatoFactory';
 
 describe('Factory', () => {
   it('stores position', () => {

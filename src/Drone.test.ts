@@ -1,6 +1,7 @@
-import { TomatoFactory } from './Factory';
+import { TomatoFactory } from './factories/TomatoFactory';
 import { Tomato } from './Storage';
-import { Drone, WalkToGrabProductBehavior } from './Drone';
+import { Drone } from './Drone';
+import { WalkToGrabProduct } from './behaviors/WalkToGrabProduct';
 
 describe('Drone', () => {
   it('reserves products in factories', () => {
@@ -20,9 +21,9 @@ describe('Drone', () => {
     expect(factoryB.demand.get(Tomato)).toEqual(30);
     expect(factoryB.reservedInbox.get(Tomato)).toEqual(20);
 
-    expect(drone.behavior).toBeInstanceOf(WalkToGrabProductBehavior);
+    expect(drone.behavior).toBeInstanceOf(WalkToGrabProduct);
 
-    const behavior = drone.behavior as WalkToGrabProductBehavior;
+    const behavior = drone.behavior as WalkToGrabProduct;
 
     expect(behavior.productType).toBe(Tomato);
     expect(behavior.amount).toBe(20);

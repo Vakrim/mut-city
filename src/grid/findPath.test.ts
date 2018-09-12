@@ -1,4 +1,5 @@
-import { Graph, findPath } from './AStar';
+import { findPath } from './findPath';
+import { Graph } from './Graph';
 
 // prettier-ignore
 const map = [
