@@ -9,19 +9,19 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@types/jest": "^23.3.1",
-    "@types/lodash": "^4.14.92",
-    "jest": "^23.5.0",
-    "lodash": "^4.17.4",
-    "roughjs": "https://github.com/Vakrim/rough.git",
+    "@types/jest": "^23.3.2",
+    "@types/lodash": "^4.14.116",
+    "jest": "^23.6.0",
+    "lodash": "^4.17.11",
+    "roughjs": "git+https://github.com/Vakrim/rough.git",
     "ts-jest": "^23.1.4"
   },
   "devDependencies": {
-    "ts-loader": "^4.1.0",
-    "typescript": "^2.7.2",
-    "webpack": "^4.1.1",
-    "webpack-cli": "^2.0.12",
-    "webpack-dev-server": "^3.1.1"
+    "ts-loader": "^4.5.0",
+    "typescript": "^2.9.2",
+    "webpack": "^4.18.1",
+    "webpack-cli": "^2.1.5",
+    "webpack-dev-server": "^3.1.8"
   },
   "jest": {
     "transform": {
