@@ -1,25 +1,25 @@
-import { HasPosition } from "./Game";
-import Resource from "./Resource";
+import { Resource } from "./Resource";
+import { Field } from "./Board";
 
-export default class Path {
-  path: HasPosition[];
-  start: HasPosition;
-  end: HasPosition;
-  route: HasPosition[];
+export class Path {
+  // path: Field[];
+  start: Field;
+  end: Field;
+  route: Field[];
 
-  constructor(path: HasPosition[]) {
-    this.path = path;
+  constructor(path: Field[]) {
+    // this.path = path;
     const route = [...path];
-    this.start = <HasPosition>route.shift();
-    this.end = <HasPosition>route.pop();
+    this.start = route.shift();
+    this.end = route.pop();
     this.route = route;
   }
 }
 
 export class ResourcePath extends Path {
-  resource: Resource
+  resource: Resource;
 
-  constructor(path: HasPosition[], resource: Resource) {
+  constructor(path: Field[], resource: Resource) {
     super(path);
     this.resource = resource;
   }

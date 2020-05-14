@@ -1,21 +1,22 @@
 {
-  "name": "type-script-bootstrap",
+  "name": "mut-city",
   "version": "1.0.0",
+  "private": true,
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "webpack-dev-server --content-base ./public"
-  },
-  "license": "MIT",
-  "devDependencies": {
-    "ts-loader": "^3.2.0",
-    "typescript": "^2.6.2",
-    "webpack": "^1.12.9",
-    "webpack-dev-server": "^1.14.0"
+    "test": "jest",
+    "start": "parcel src/index.html"
   },
   "dependencies": {
-    "@types/lodash": "^4.14.92",
-    "@types/pixi.js": "^4.6.3",
-    "lodash": "^4.17.4",
-    "pixi.js": "^4.6.2"
+    "jest": "^25.1.0",
+    "lodash": "^4.17.11",
+    "parcel": "^1.12.4",
+    "simplex-noise": "^2.4.0"
+  },
+  "devDependencies": {
+    "@types/jest": "^23.3.13",
+    "@types/lodash": "^4.14.120",
+    "ts-jest": "^25.1.0",
+    "ts-loader": "^5.3.3",
+    "typescript": "^3.2.4"
   }
 }

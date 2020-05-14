@@ -1,19 +1,25 @@
-function strEnum<T extends string>(o: Array<T>): { [K in T]: K } {
-  return o.reduce((res, key) => {
-    res[key] = key;
-    return res;
-  }, Object.create(null));
-}
+import { Actor } from "./types";
+import { Graphics } from "./Graphics";
+import { Vec2 } from "./Math";
 
-const ResourceTypes = strEnum(["Wood", "Log", "Point"]);
-export type ResourceType = keyof typeof ResourceTypes;
+export class Resource implements Actor {
+  position: Vec2;
+  animationFrame = 0;
+  reserved: boolean = false;
 
-export default class Resource {
-  amount: number;
-  type: ResourceType;
-
-  constructor(amount: number, type: ResourceType) {
-    this.amount = amount;
-    this.type = type;
+  constructor(position: Vec2) {
+    this.position = position;
   }
+
+  draw(graphics: Graphics): void {
+    graphics.drawSprite(
+      this.position.x,
+      this.position.y,
+      graphics.tilesetLocations.resource
+    );
+
+    this.animationFrame = (this.animationFrame + 1) % 60;
+  }
+
+  update(): void {}
 }

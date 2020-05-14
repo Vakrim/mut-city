@@ -1,75 +1,88 @@
-import { Vec2 } from "./Math";
-import { HasPosition } from './Game';
-import { minBy, pull } from 'lodash';
-import Path from "./Path";
-
-type Grid = Array<Array<HasPosition>>;
-type EmptyCell= HasPosition & {isEmpty: boolean}
+import { Path } from "./Path";
+import { Board, Field, isEmptyField } from "./Board";
 
 export default class FindNearest {
-  grid: Grid;
+  board: Board;
 
-  visited: HasPosition[];
-  cost: Map<HasPosition, number> = new Map();
-  cameFrom: Map<HasPosition, HasPosition> = new Map();
-  openSet: HasPosition[];
-  start: HasPosition;
+  visited: Set<Field>;
+  cost: Map<Field, number> = new Map();
+  cameFrom: Map<Field, Field> = new Map();
+  openSet: Set<Field>;
+  start: Field;
+  end: Field;
 
-  constructor(grid: Grid, start: HasPosition) {
-    this.grid = grid;
+  constructor(board: Board, start: Field, end: Field) {
+    this.board = board;
     this.start = start;
-    this.visited = [start];
-    this.cost.set(start, 0)
-    this.openSet = [];
+    this.end = end;
+    this.visited = new Set([start]);
+    this.cost.set(start, 0);
+    this.openSet = new Set();
     this.addNeighbourhood(start);
   }
 
   solve() {
-    const endNode = this.calculateEndNode();
-    if(!endNode) {
+    const endField = this.calculateEndNode();
+    if (!endField) {
       return null;
     }
-    return this.getPathFromStart(endNode);
+    return this.getPathFromStart(endField);
   }
 
-  private getPathFromStart(endNode: HasPosition) {
+  private getPathFromStart(endField: Field) {
     const path = [];
-    let lastNode = endNode;
-    while(lastNode) {
-      path.push(lastNode);
-      lastNode = <HasPosition>this.cameFrom.get(lastNode);
+    let lastField = endField;
+    while (lastField) {
+      path.push(lastField);
+      lastField = this.cameFrom.get(lastField);
     }
     return new Path(path.reverse());
   }
 
   private calculateEndNode() {
-    while(true) {
-      const node = minBy(this.openSet, (n: HasPosition) => this.cost.get(n));
-      if(!node) {
+    while (true) {
+      const field = minBy(this.openSet, (n: Field) => this.cost.get(n));
+      if (!field) {
         return null;
       }
-      pull(this.openSet, node)
-      if((<EmptyCell>node).isEmpty) {
-        return node;
+      this.openSet.delete(field);
+      if (field === this.end) {
+        return field;
       }
-      this.visited.push(node);
-      this.addNeighbourhood(node);
+      this.visited.add(field);
+      this.addNeighbourhood(field);
     }
   }
 
-  private addNeighbourhood(node: HasPosition) {
-    const { position: {x, y} } = node;
-    [
-      this.grid[x][y-1],
-      this.grid[x+1][y],
-      this.grid[x][y+1],
-      this.grid[x-1][y],
-    ].forEach(neighbour => {
-      if(!this.visited.includes(neighbour) && !this.openSet.includes(neighbour)) {
-        this.cost.set(neighbour, <number>this.cost.get(node) + 1)
-        this.cameFrom.set(neighbour, node)
-        this.openSet.push(neighbour)
-      }
-    })
+  private addNeighbourhood(field: Field) {
+    const { x, y } = this.board.getFieldPosition(field);
+
+    this.addNeighbour(field, this.board.getField(x, y - 1));
+    this.addNeighbour(field, this.board.getField(x + 1, y));
+    this.addNeighbour(field, this.board.getField(x, y + 1));
+    this.addNeighbour(field, this.board.getField(x - 1, y));
   }
+
+  private addNeighbour(from: Field, neighbour: Field) {
+    if (!neighbour || this.visited.has(neighbour) || this.openSet.has(neighbour)) {
+      return;
+    }
+
+    this.cost.set(neighbour, this.cost.get(from) + neighbour.pathCost);
+    this.cameFrom.set(neighbour, from);
+    this.openSet.add(neighbour);
+  }
+}
+
+function minBy<T>(set: Set<T>, predicate: (item: T) => number) {
+  let score = Infinity;
+  let result = null;
+  for (let item of set) {
+    const itemScore = predicate(item);
+    if (itemScore < score) {
+      score = itemScore;
+      result = item;
+    }
+  }
+  return result;
 }
