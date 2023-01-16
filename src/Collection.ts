@@ -1,8 +1,8 @@
 export default class Collection<T> {
   set: Set<T>;
 
-  constructor(ininitial: T[] = []) {
-    this.set = new Set(ininitial);
+  constructor(initial: T[] = []) {
+    this.set = new Set(initial);
   }
 
   find(predicate: (item: T) => Boolean): T | null {
@@ -15,7 +15,7 @@ export default class Collection<T> {
   }
 
   filter(predicate: (item: T) => Boolean): T[] {
-    const ret = []
+    const ret = [];
     for (let element of this.set) {
       if (predicate(element)) {
         ret.push(element);
@@ -51,5 +51,12 @@ export default class Collection<T> {
 
   [Symbol.iterator]() {
     return this.set.values();
+  }
+}
+
+export class CollectionMap<K, V> extends Map<K, Collection<V>> {
+  get(key: K): Collection<V> {
+    const existing = super.get(key);
+    return existing ?? new Collection();
   }
 }

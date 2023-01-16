@@ -1,16 +1,11 @@
-import { Vec2, ones } from './Math';
-import Collection from './Collection';
-import * as rough from 'roughjs';
-import { Drone } from './Drone';
-import { Factory } from './factories/Factory';
-import { TomatoFactory } from './factories/TomatoFactory';
-import { TomatoSlicingFactory } from './factories/TomatoSlicingFactory';
-import { GridNode } from './grid/GridNode';
-import { Graph } from './grid/Graph';
-
-export interface HasPosition {
-  position: Vec2;
-}
+import { Vec2, ones } from "./Math";
+import Collection from "./Collection";
+import * as rough from "roughjs";
+import { Company } from "./companies/Company";
+import { TomatoFactory } from "./companies/TomatoFactory";
+import { TomatoSlicingFactory } from "./companies/TomatoSlicingFactory";
+import { Graph } from "./grid/Graph";
+import { Market } from "./Market";
 
 interface GameObject {
   update(game: Game): void;
@@ -18,51 +13,53 @@ interface GameObject {
 }
 
 export default class Game {
-  objects: Collection<GameObject>;
+  objects = new Collection<GameObject>();
   graph: Graph = new Graph(ones(50, 50));
   step: number = 0;
+  market = new Market();
 
   graphics: any;
   canvas: HTMLCanvasElement;
 
   constructor() {
-    this.objects = new Collection();
-
-    this.canvas = document.getElementById('canvas') as HTMLCanvasElement;
+    this.canvas = document.getElementById("canvas") as HTMLCanvasElement;
     this.graphics = rough.canvas(this.canvas);
 
     this.seed();
 
-    this.canvas.addEventListener('click', event => {
+    this.canvas.addEventListener("click", (event) => {
       const rect = this.canvas.getBoundingClientRect();
       const x = event.clientX - rect.left;
       const y = event.clientY - rect.top;
 
-      const inspected = this.objects.find(object => {
-        return object.position.x * 10 <= x && x <= object.position.x * 10 + 10 &&
-        object.position.y * 10 <= y && y <= object.position.y * 10 + 10
+      const inspected = this.objects.find((object) => {
+        return (
+          object.position.x * 10 <= x &&
+          x <= object.position.x * 10 + 10 &&
+          object.position.y * 10 <= y &&
+          y <= object.position.y * 10 + 10
+        );
       });
 
       console.dir(inspected);
-    })
+    });
   }
 
   seed() {
     for (let i = 0; i < 10; i++) {
-      this.objects.add(new Drone());
+      this.objects.add(new TomatoFactory(new Vec2(2 * i + 2, 2), this.market));
     }
     for (let i = 0; i < 10; i++) {
-      this.objects.add(new TomatoFactory(new Vec2(2 * i + 2, 2)));
-    }
-    for (let i = 0; i < 10; i++) {
-      this.objects.add(new TomatoSlicingFactory(new Vec2(2 * i + 2, 40)));
+      this.objects.add(
+        new TomatoSlicingFactory(new Vec2(2 * i + 2, 40), this.market)
+      );
     }
   }
 
-  factories(): Factory[] {
+  factories(): Company[] {
     return this.objects.filter(
-      object => object instanceof Factory
-    ) as Factory[];
+      (object) => object instanceof Company
+    ) as Company[];
   }
 
   run() {
@@ -82,13 +79,11 @@ export default class Game {
   }
 
   render() {
-    const context = this.canvas.getContext('2d');
+    const context = this.canvas.getContext("2d")!;
 
     context.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
-    const fillGreen = { fill: 'green' };
-    const fillRed = { fill: 'red' };
-    const lightStroke = { stroke: 'rgba(0, 0, 0, 0.1)'}
+    const fillRed = { fill: "red" };
 
     for (let object of this.objects) {
       this.graphics.rectangle(
@@ -96,21 +91,8 @@ export default class Game {
         object.position.y * 10 + 1,
         8,
         8,
-        object instanceof Drone ? fillGreen : fillRed
+        fillRed
       );
-
-      if (object instanceof Drone && (object.behavior as any).path) {
-        const path = (object.behavior as any).path as GridNode[];
-        for (let i = 1; i < path.length; i++) {
-          this.graphics.line(
-            path[i - 1].x * 10 + 5,
-            path[i - 1].y * 10 + 5,
-            path[i].x * 10 + 5,
-            path[i].y * 10 + 5,
-            lightStroke
-          );
-        }
-      }
     }
   }
 }

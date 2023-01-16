@@ -1,11 +1,13 @@
 {
   "name": "mut-city",
+  "private": true,
+  "type": "module",
   "version": "1.0.0",
   "scripts": {
-    "test": "jest",
-    "start": "webpack-dev-server --mode development",
-    "build": "webpack --mode production",
-    "watch": "webpack --watch --mode development"
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "test": "jest"
   },
   "license": "MIT",
   "dependencies": {
@@ -14,14 +16,8 @@
     "jest": "^23.6.0",
     "lodash": "^4.17.11",
     "roughjs": "git+https://github.com/Vakrim/rough.git",
-    "ts-jest": "^23.1.4"
-  },
-  "devDependencies": {
-    "ts-loader": "^4.5.0",
-    "typescript": "^2.9.2",
-    "webpack": "^4.18.1",
-    "webpack-cli": "^2.1.5",
-    "webpack-dev-server": "^3.1.8"
+    "ts-jest": "^23.1.4",
+    "vite": "^4.0.0"
   },
   "jest": {
     "transform": {
