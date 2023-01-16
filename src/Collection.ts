@@ -53,10 +53,3 @@ export default class Collection<T> {
     return this.set.values();
   }
 }
-
-export class CollectionMap<K, V> extends Map<K, Collection<V>> {
-  get(key: K): Collection<V> {
-    const existing = super.get(key);
-    return existing ?? new Collection();
-  }
-}

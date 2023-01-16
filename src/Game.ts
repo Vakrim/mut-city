@@ -1,19 +1,14 @@
 import { Vec2, ones } from "./Math";
 import Collection from "./Collection";
 import * as rough from "roughjs";
-import { Company } from "./companies/Company";
-import { TomatoFactory } from "./companies/TomatoFactory";
+import { Company, CompanyLifeCycle } from "./companies/Company";
+import TomatoFactory from "./companies/TomatoFactory";
 import { TomatoSlicingFactory } from "./companies/TomatoSlicingFactory";
 import { Graph } from "./grid/Graph";
 import { Market } from "./Market";
 
-interface GameObject {
-  update(game: Game): void;
-  position: Vec2;
-}
-
 export default class Game {
-  objects = new Collection<GameObject>();
+  objects = new Collection<CompanyLifeCycle & Company>();
   graph: Graph = new Graph(ones(50, 50));
   step: number = 0;
   market = new Market();
@@ -55,13 +50,7 @@ export default class Game {
       );
     }
   }
-
-  factories(): Company[] {
-    return this.objects.filter(
-      (object) => object instanceof Company
-    ) as Company[];
-  }
-
+  
   run() {
     setInterval(() => {
       this.update();
@@ -74,7 +63,13 @@ export default class Game {
   update() {
     this.step++;
     for (let object of this.objects) {
-      object.update(this);
+      object.produce?.();
+    }
+    for (let object of this.objects) {
+      object.makeOffers?.();
+    }
+    for (let object of this.objects) {
+      object.buyFromMarket?.();
     }
   }
 

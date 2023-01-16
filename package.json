@@ -10,13 +10,14 @@
     "test": "jest"
   },
   "license": "MIT",
-  "dependencies": {
+  "devDependencies": {
     "@types/jest": "^23.3.2",
     "@types/lodash": "^4.14.116",
     "jest": "^23.6.0",
     "lodash": "^4.17.11",
     "roughjs": "git+https://github.com/Vakrim/rough.git",
     "ts-jest": "^23.1.4",
+    "typescript": "^4.9.4",
     "vite": "^4.0.0"
   },
   "jest": {

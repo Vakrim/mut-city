@@ -1,12 +1,9 @@
 import { Vec2 } from "../Math";
 import { Storage, ProductType } from "../Storage";
-import Game from "../Game";
 import { Market } from "../Market";
 
 export abstract class Company {
-  outbox: Storage = new Storage();
-  inbox: Storage = new Storage();
-  demand: Storage = new Storage();
+  protected storage = new Storage();
 
   constructor(readonly position: Vec2 = Vec2.random(), private market: Market) {
     this.init();
@@ -14,7 +11,7 @@ export abstract class Company {
 
   init() {}
 
-  offer(amount: number, type: ProductType) {
+  protected offer(amount: number, type: ProductType) {
     this.market.addOffer({
       amount,
       type,
@@ -23,13 +20,16 @@ export abstract class Company {
   }
 
   take(amount: number, type: ProductType) {
-    this.outbox.subtract(amount, type);
+    this.storage.subtract(amount, type);
   }
+}
 
-  bring(amount: number, type: ProductType) {
-    this.inbox.add(amount, type);
-    this.demand.subtract(amount, type);
-  }
+export interface CompanyLifeCycle {
+  init?(): void;
 
-  update(game: Game) {}
+  produce?(): void;
+
+  makeOffers?(): void;
+
+  buyFromMarket?(): void;
 }

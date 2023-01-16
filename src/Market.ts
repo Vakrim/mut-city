@@ -1,4 +1,4 @@
-import { CollectionMap } from "./Collection";
+import { CollectionMap } from "./CollectionMap";
 import { Company } from "./companies/Company";
 import { ProductType } from "./Storage";
 
@@ -6,7 +6,7 @@ export class Market {
   private offers = new CollectionMap<ProductType, Offer>();
 
   addOffer(offer: Offer) {
-    this.offers.set;
+    this.offers.add(offer.type, offer);
   }
 }
 

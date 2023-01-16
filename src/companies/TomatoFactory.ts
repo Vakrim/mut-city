@@ -1,11 +1,16 @@
-import { Company } from "./Company";
-import Game from "../Game";
+import { Company, CompanyLifeCycle } from "./Company";
 import { ProductType, Tomato } from "../Storage";
 
-export class TomatoFactory extends Company {
-  update(game: Game) {
-    if(this.outbox.get(ProductType.Tomato) < 100) {
-      this.outbox.add(1, Tomato);
+export default class TomatoFactory extends Company implements CompanyLifeCycle {
+  produce() {
+    if (this.storage.get(ProductType.Tomato) < 100) {
+      this.storage.add(1, Tomato);
+    }
+  }
+
+  makeOffers(): void {
+    if (this.storage.get(ProductType.Tomato) > 0) {
+      this.offer(1, ProductType.Tomato);
     }
   }
 }
