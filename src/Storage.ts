@@ -3,7 +3,9 @@ export class Storage {
 
   add(amount: number, type: ProductType) {
     const currentAmount = this.get(type);
-    this.storage.set(type, currentAmount + amount);
+    const newAmount = currentAmount + amount;
+    this.storage.set(type, newAmount);
+    return newAmount;
   }
 
   subtract(amount: number, type: ProductType) {
@@ -13,6 +15,7 @@ export class Storage {
       throw new Error("Unexpected take");
     }
     this.storage.set(type, newAmount);
+    return newAmount;
   }
 
   get(type: ProductType) {

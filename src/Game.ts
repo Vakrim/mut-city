@@ -41,7 +41,7 @@ export default class Game {
   }
 
   seed() {
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < 5; i++) {
       this.objects.add(new TomatoFactory(new Vec2(2 * i + 2, 2), this.market));
     }
     for (let i = 0; i < 10; i++) {
@@ -50,7 +50,7 @@ export default class Game {
       );
     }
   }
-  
+
   run() {
     setInterval(() => {
       this.update();
@@ -62,6 +62,15 @@ export default class Game {
 
   update() {
     this.step++;
+    this.market.clear();
+
+    const removeCompany = (company: Company) => {
+      this.objects.delete(company);
+    };
+
+    for (let object of this.objects) {
+      object.startDay();
+    }
     for (let object of this.objects) {
       object.produce?.();
     }
@@ -70,6 +79,9 @@ export default class Game {
     }
     for (let object of this.objects) {
       object.buyFromMarket?.();
+    }
+    for (let object of this.objects) {
+      object.finishDay(removeCompany);
     }
   }
 

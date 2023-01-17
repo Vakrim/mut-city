@@ -1,7 +1,7 @@
 import { GridNode } from './GridNode';
 import { BinaryHeap } from './BinaryHeap';
-import { heuristics } from './heuristics';
 import { Graph } from './Graph';
+import { getManhattanDistance } from './heuristics';
 
 // based on http://github.com/bgrins/javascript-astar
 // Freely distributable under the MIT License.
@@ -45,7 +45,7 @@ export const findPath = (
   options: { closest?: boolean; heuristic?: HeuristicFunction } = {}
 ) => {
   graph.cleanDirty();
-  const heuristic = options.heuristic || heuristics.manhattan;
+  const heuristic = options.heuristic || getManhattanDistance;
   const closest = options.closest || false;
 
   const openHeap = getHeap();
@@ -121,4 +121,3 @@ export const findPath = (
   // No result was found - empty array signifies failure to find path.
   return [];
 };
-
