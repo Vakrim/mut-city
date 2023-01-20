@@ -1,7 +1,9 @@
 import { Vec2 } from "../Math";
-import { Storage, ProductType } from "../Storage";
+import { Storage } from "../Storage";
 import { Market, Offer } from "../Market";
 import { getManhattanDistance } from "../grid/heuristics";
+import { Product, Recipe } from "../recipes";
+import { Log } from "../Log";
 
 export abstract class Company {
   protected storage = new Storage();
@@ -9,13 +11,18 @@ export abstract class Company {
   public money = 1000;
   public soldOnThisDay = false;
 
-  constructor(readonly position: Vec2 = Vec2.random(), private market: Market) {
+  constructor(
+    readonly position: Vec2,
+    protected recipe: Recipe,
+    private market: Market,
+    protected log: Log
+  ) {
     this.init();
   }
 
   public init() {}
 
-  public take(amount: number, type: ProductType) {
+  public take(amount: number, type: Product) {
     this.storage.subtract(amount, type);
   }
 
@@ -24,24 +31,24 @@ export abstract class Company {
   }
 
   public finishDay(reportBankruptcy: (company: Company) => void) {
-    if(!this.soldOnThisDay) {
+    if (!this.soldOnThisDay) {
       this.price *= 1 - Math.random() / 50;
     }
     this.money -= 10;
 
-    if(this.money < 0) {
+    if (this.money < 0) {
       reportBankruptcy(this);
     }
   }
 
-  protected offer(type: ProductType) {
+  protected offer(type: Product) {
     this.market.addOffer({
       type,
       company: this,
     });
   }
 
-  protected buy(type: ProductType) {
+  protected buy(type: Product) {
     const offers = this.market.getOffers(type);
 
     let bestOffer: { offer: Offer; cost: number } | null = null;
@@ -62,9 +69,7 @@ export abstract class Company {
       return false;
     }
 
-    console.log(bestOffer)
-
-    if(this.money < bestOffer.cost) {
+    if (this.money < bestOffer.cost) {
       return false;
     }
 
@@ -77,9 +82,15 @@ export abstract class Company {
 
     bestOffer.offer.company.soldOnThisDay = true;
 
-    if(restOfStockpile === 0) {
+    if (restOfStockpile === 0) {
       this.market.removeOffer(bestOffer.offer);
     }
+
+    this.log.push({
+      type: "transaction",
+      seller: bestOffer.offer.company,
+      buyer: this,
+    });
 
     return true;
   }

@@ -1,19 +1,23 @@
-import { Vec2, ones } from "./Math";
-import Collection from "./Collection";
+import { Vec2, ones, randomFromArray } from "./Math";
 import * as rough from "roughjs";
-import { Company, CompanyLifeCycle } from "./companies/Company";
-import TomatoFactory from "./companies/TomatoFactory";
-import { TomatoSlicingFactory } from "./companies/TomatoSlicingFactory";
+import { Company } from "./companies/Company";
+import { Factory } from "./companies/Factory";
 import { Graph } from "./grid/Graph";
 import { Market } from "./Market";
+import { recipes } from "./recipes";
+import { GameObjectCollection } from "./GameObjectsCollection";
+import { Log } from "./Log";
+import { Graphics } from "./Graphics";
 
 export default class Game {
-  objects = new Collection<CompanyLifeCycle & Company>();
-  graph: Graph = new Graph(ones(50, 50));
+  objects = new GameObjectCollection();
+  gridSize = 50;
+  graph: Graph = new Graph(ones(this.gridSize, this.gridSize));
   step: number = 0;
   market = new Market();
+  log: Log = [];
 
-  graphics: any;
+  graphics: Graphics;
   canvas: HTMLCanvasElement;
 
   constructor() {
@@ -41,14 +45,21 @@ export default class Game {
   }
 
   seed() {
-    for (let i = 0; i < 5; i++) {
-      this.objects.add(new TomatoFactory(new Vec2(2 * i + 2, 2), this.market));
+    for (let i = 0; i < 50; i++) {
+      this.createRandomFactory();
     }
-    for (let i = 0; i < 10; i++) {
-      this.objects.add(
-        new TomatoSlicingFactory(new Vec2(2 * i + 2, 40), this.market)
-      );
+  }
+
+  createRandomFactory() {
+    const position = Vec2.random(this.gridSize);
+
+    if (!this.objects.isEmptySpace(position)) {
+      return;
     }
+
+    this.objects.add(
+      new Factory(position, randomFromArray(recipes), this.market, this.log)
+    );
   }
 
   run() {
@@ -67,6 +78,10 @@ export default class Game {
     const removeCompany = (company: Company) => {
       this.objects.delete(company);
     };
+
+    if (this.objects.size() < 500) {
+      this.createRandomFactory();
+    }
 
     for (let object of this.objects) {
       object.startDay();
@@ -101,5 +116,25 @@ export default class Game {
         fillRed
       );
     }
+
+    for (let entry of this.log) {
+      if (entry.type === "transaction") {
+        this.graphics.line(
+          entry.seller.position.x * 10 + 5,
+          entry.seller.position.y * 10 + 5,
+          entry.buyer.position.x * 10 + 5,
+          entry.buyer.position.y * 10 + 5
+        );
+      } else if (entry.type === "produced") {
+        this.graphics.circle(
+          entry.company.position.x * 10 + 5,
+          entry.company.position.y * 10 + 5,
+          20,
+          { stroke: "blue" }
+        );
+      }
+    }
+
+    this.log.length = 0;
   }
 }

@@ -1,16 +1,16 @@
 import Collection from "./Collection";
 import { CollectionMap } from "./CollectionMap";
 import { Company } from "./companies/Company";
-import { ProductType } from "./Storage";
+import { Product } from "./recipes";
 
 export class Market {
-  private offers = new CollectionMap<ProductType, Offer>();
+  private offers = new CollectionMap<Product, Offer>();
 
   addOffer(offer: Offer) {
     this.offers.add(offer.type, offer);
   }
 
-  getOffers(type: ProductType): Collection<Offer> {
+  getOffers(type: Product): Collection<Offer> {
     return this.offers.get(type);
   }
 
@@ -24,6 +24,6 @@ export class Market {
 }
 
 export interface Offer {
-  type: ProductType;
+  type: Product;
   company: Company;
 }

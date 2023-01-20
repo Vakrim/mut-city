@@ -1,6 +1,6 @@
 import { Market } from '../Market';
 import { Vec2 } from '../Math';
-import TomatoFactory from './TomatoFactory';
+import Factory from './Factory';
 
 describe('Factory', () => {
   it('stores position', () => {
@@ -8,7 +8,7 @@ describe('Factory', () => {
 
     const market = new Market();
 
-    const factory = new TomatoFactory(position, market);
+    const factory = new Factory(position, market);
 
     expect(factory.position).toBe(position);
   });

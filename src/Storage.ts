@@ -1,14 +1,16 @@
-export class Storage {
-  storage: Map<ProductType, number> = new Map();
+import { Product } from "./recipes";
 
-  add(amount: number, type: ProductType) {
+export class Storage {
+  storage: Map<Product, number> = new Map();
+
+  add(amount: number, type: Product) {
     const currentAmount = this.get(type);
     const newAmount = currentAmount + amount;
     this.storage.set(type, newAmount);
     return newAmount;
   }
 
-  subtract(amount: number, type: ProductType) {
+  subtract(amount: number, type: Product) {
     const currentAmount = this.get(type);
     const newAmount = currentAmount - amount;
     if (newAmount < 0) {
@@ -18,15 +20,7 @@ export class Storage {
     return newAmount;
   }
 
-  get(type: ProductType) {
+  get(type: Product) {
     return this.storage.get(type) ?? 0;
   }
 }
-
-export enum ProductType {
-  Tomato,
-  SlicedTomato,
-  TomatoSoup,
-}
-
-export const Tomato = ProductType.Tomato;

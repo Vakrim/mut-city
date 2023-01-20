@@ -49,7 +49,11 @@ export default class Collection<T> {
     return value;
   }
 
-  [Symbol.iterator]() {
-    return this.set.values();
+  size() {
+    return this.set.size;
+  }
+
+  *[Symbol.iterator]() {
+    yield* this.set;
   }
 }

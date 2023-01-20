@@ -11,10 +11,10 @@ export class Vec2 {
     return this.x === other.x && this.y === other.y;
   }
 
-  static random(): Vec2 {
+  static random(range: number): Vec2 {
     return new Vec2(
-      Math.floor(Math.random() * 50),
-      Math.floor(Math.random() * 50)
+      Math.floor(Math.random() * range),
+      Math.floor(Math.random() * range)
     );
   }
 
