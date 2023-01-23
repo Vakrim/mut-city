@@ -1,8 +1,8 @@
 import Collection from "./Collection";
-import { Company, CompanyLifeCycle } from "./companies/Company";
+import { Building } from "./companies/Building";
 import { Vec2 } from "./Math";
 
-type GameObject = CompanyLifeCycle & Company;
+type GameObject = Building;
 
 export class GameObjectCollection implements Iterable<GameObject> {
   private collection = new Collection<GameObject>();

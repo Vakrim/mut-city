@@ -1,6 +1,6 @@
 import { Vec2, ones, randomFromArray } from "./Math";
 import * as rough from "roughjs";
-import { Company } from "./companies/Company";
+import { Building } from "./companies/Building";
 import { Factory } from "./companies/Factory";
 import { Graph } from "./grid/Graph";
 import { Market } from "./Market";
@@ -8,6 +8,7 @@ import { recipes } from "./recipes";
 import { GameObjectCollection } from "./GameObjectsCollection";
 import { Log } from "./Log";
 import { Graphics } from "./Graphics";
+import { Residential } from "./companies/Residential";
 
 export default class Game {
   objects = new GameObjectCollection();
@@ -16,6 +17,7 @@ export default class Game {
   step: number = 0;
   market = new Market();
   log: Log = [];
+  residentialStatus = { maxLevel: 1, missingBuildings: 3 };
 
   graphics: Graphics;
   canvas: HTMLCanvasElement;
@@ -62,6 +64,16 @@ export default class Game {
     );
   }
 
+  createRandomResidential() {
+    const position = Vec2.random(this.gridSize);
+
+    if (!this.objects.isEmptySpace(position)) {
+      return;
+    }
+
+    this.objects.add(new Residential(position, this.market, this.log));
+  }
+
   run() {
     setInterval(() => {
       this.update();
@@ -75,19 +87,32 @@ export default class Game {
     this.step++;
     this.market.clear();
 
-    const removeCompany = (company: Company) => {
-      this.objects.delete(company);
+    const removeCompany = (building: Building) => {
+      this.objects.delete(building);
     };
 
     if (this.objects.size() < 500) {
       this.createRandomFactory();
+
+      if (this.residentialStatus.missingBuildings > 0) {
+        this.createRandomResidential();
+        this.residentialStatus.missingBuildings--;
+      }
     }
 
     for (let object of this.objects) {
-      object.startDay();
+      object.startDay?.();
     }
     for (let object of this.objects) {
       object.produce?.();
+      if (
+        object instanceof Residential &&
+        object.level > this.residentialStatus.maxLevel
+      ) {
+        this.residentialStatus.maxLevel++;
+        this.residentialStatus.missingBuildings +=
+          this.residentialStatus.maxLevel;
+      }
     }
     for (let object of this.objects) {
       object.makeOffers?.();
@@ -96,7 +121,7 @@ export default class Game {
       object.buyFromMarket?.();
     }
     for (let object of this.objects) {
-      object.finishDay(removeCompany);
+      object.finishDay?.(removeCompany);
     }
   }
 
@@ -106,6 +131,7 @@ export default class Game {
     context.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
     const fillRed = { fill: "red" };
+    const fillGreen = { fill: "green" };
 
     for (let object of this.objects) {
       this.graphics.rectangle(
@@ -113,7 +139,7 @@ export default class Game {
         object.position.y * 10 + 1,
         8,
         8,
-        fillRed
+        object instanceof Factory ? fillRed : fillGreen
       );
     }
 

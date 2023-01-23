@@ -15,6 +15,9 @@ export interface Recipe {
 }
 
 export const recipes = [
+  { in: [], out: ["tree"] },
+  { in: [], out: ["rice"] },
+  { in: [], out: ["tomato"] },
   { in: ["tree"], out: ["planks"] },
   { in: ["planks"], out: ["furniture"] },
   { in: ["rice", "tomato"], out: ["soup"] },

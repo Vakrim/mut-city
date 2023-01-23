@@ -1,14 +1,14 @@
-import { Company } from "./companies/Company";
+import { Building } from "./companies/Building";
 
 export type LogEntry =
   | {
       type: "transaction";
-      seller: Company;
-      buyer: Company;
+      seller: Building;
+      buyer: Building;
     }
   | {
       type: "produced";
-      company: Company;
+      company: Building;
     };
 
 export type Log = LogEntry[];

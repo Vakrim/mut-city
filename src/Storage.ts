@@ -23,4 +23,8 @@ export class Storage {
   get(type: Product) {
     return this.storage.get(type) ?? 0;
   }
+
+  clear() {
+    this.storage.clear()
+  }
 }

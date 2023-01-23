@@ -1,6 +1,6 @@
 import Collection from "./Collection";
 import { CollectionMap } from "./CollectionMap";
-import { Company } from "./companies/Company";
+import { Factory } from "./companies/Factory";
 import { Product } from "./recipes";
 
 export class Market {
@@ -25,5 +25,5 @@ export class Market {
 
 export interface Offer {
   type: Product;
-  company: Company;
+  factory: Factory;
 }
