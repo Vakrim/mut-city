@@ -18,6 +18,8 @@ export default class Game {
   market = new Market();
   log: Log = [];
   residentialStatus = { maxLevel: 1, missingBuildings: 3 };
+  timeCompression = false;
+  lastRenderTimestamp = 0;
 
   graphics: Graphics;
   canvas: HTMLCanvasElement;
@@ -27,23 +29,6 @@ export default class Game {
     this.graphics = rough.canvas(this.canvas);
 
     this.seed();
-
-    this.canvas.addEventListener("click", (event) => {
-      const rect = this.canvas.getBoundingClientRect();
-      const x = event.clientX - rect.left;
-      const y = event.clientY - rect.top;
-
-      const inspected = this.objects.find((object) => {
-        return (
-          object.position.x * 10 <= x &&
-          x <= object.position.x * 10 + 10 &&
-          object.position.y * 10 <= y &&
-          y <= object.position.y * 10 + 10
-        );
-      });
-
-      console.dir(inspected);
-    });
   }
 
   seed() {
@@ -75,17 +60,31 @@ export default class Game {
   }
 
   run() {
-    setInterval(() => {
+    requestAnimationFrame((timestamp) => {
+      this.requestUpdateFrame();
+      this.requestRenderFrame(timestamp);
+    });
+  }
+
+  requestUpdateFrame() {
+    if (this.timeCompression) {
+      const start = performance.now();
+      while (performance.now() - start < 1000 / 120) {
+        this.update();
+      }
+    } else {
       this.update();
-    }, 100);
-    setInterval(() => {
-      this.render();
-    }, 100);
+    }
+
+    requestAnimationFrame(() => {
+      this.requestUpdateFrame();
+    });
   }
 
   update() {
     this.step++;
     this.market.clear();
+    this.log.length = 0;
 
     const removeCompany = (building: Building) => {
       this.objects.delete(building);
@@ -125,6 +124,17 @@ export default class Game {
     }
   }
 
+  requestRenderFrame(timestamp: number) {
+    if (timestamp - this.lastRenderTimestamp > 70) {
+      this.render();
+      this.lastRenderTimestamp = timestamp;
+    }
+
+    requestAnimationFrame((timestamp) => {
+      this.requestRenderFrame(timestamp);
+    });
+  }
+
   render() {
     const context = this.canvas.getContext("2d")!;
 
@@ -160,7 +170,5 @@ export default class Game {
         );
       }
     }
-
-    this.log.length = 0;
   }
 }
